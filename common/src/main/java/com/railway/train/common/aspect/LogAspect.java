@@ -1,4 +1,4 @@
-package com.railway.train.member.aspect;
+package com.railway.train.common.aspect;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.spring.PropertyPreFilters;
@@ -26,7 +26,7 @@ import java.util.UUID;
 @Component
 public class LogAspect {
     public LogAspect() {
-        System.out.println("Common LogAspect");
+        System.out.println("common LogAspect");
     }
 
     private final static Logger LOG = LoggerFactory.getLogger(LogAspect.class);
