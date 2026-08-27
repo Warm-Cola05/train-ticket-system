@@ -41,13 +41,13 @@
 import { defineComponent, reactive } from 'vue';
 import axios from 'axios';
 import { notification } from 'ant-design-vue';
-import { useRouter } from 'vue-router'
-import store from "@/store";
+// import { useRouter } from 'vue-router'
+// import store from "@/store";
 
 export default defineComponent({
   name: "login-view",
   setup() {
-    const router = useRouter();
+    // const router = useRouter();
 
     const loginForm = reactive({
       mobile: '13000000000',
@@ -69,13 +69,12 @@ export default defineComponent({
     };
 
     const login = () => {
-      axios.post("/member/member/login", loginForm).then((response) => {
+      axios.post("http://localhost:8000/member/member/login", loginForm).then((response) => {
         let data = response.data;
         if (data.success) {
           notification.success({ description: '登录成功！' });
-          // 登录成功，跳到控台主页
-          router.push("/welcome");
-          store.commit("setMember", data.content);
+          // router.push("/welcome");
+          // store.commit("setMember", data.content);
         } else {
           notification.error({ description: data.message });
         }
