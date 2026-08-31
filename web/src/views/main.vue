@@ -14,7 +14,7 @@
         <a-layout-content
             :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
         >
-          Content
+         所有会员总数：{{count}}
         </a-layout-content>
       </a-layout>
     </a-layout>
@@ -22,10 +22,13 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
+import { defineComponent,ref} from 'vue';
 import TheHeaderView from "@/components/the-header.vue";
 // 引入侧边栏组件
 import TheSiderView from "@/components/the-sider.vue";
+import axios from "axios";
+import {notification} from "ant-design-vue";
+
 
 export default defineComponent({
   components: {
@@ -33,9 +36,20 @@ export default defineComponent({
     TheSiderView
   },
   setup() {
+
+    const count = ref(0);
+    axios.get("/member/member/count").then((response) => {
+      let data = response.data;
+      if (data.success) {
+        count.value = data.content;
+      } else {
+        notification.error({description: data.message});
+      }
+    });
+    // selectedKeys2、openKeys 已经迁移到 the‑sider.vue，这里移除
+    // collapsed: ref(false),
     return {
-      // selectedKeys2、openKeys 已经迁移到 the‑sider.vue，这里移除
-      collapsed: ref(false),
+      count
     };
   },
 });
