@@ -41,8 +41,8 @@ public class LogAspect {
     @Before("controllerPointcut()")
     public void doBefore(JoinPoint joinPoint) {
         // 生成流水号放入MDC，logback的 %X{LOG_ID} 读取此处
-        String logId = UUID.randomUUID().toString().replace("-", "");
-        MDC.put("LOG_ID", logId);
+//        String logId = UUID.randomUUID().toString().replace("-", "");
+//        MDC.put("LOG_ID", logId);
 
         // 开始打印请求日志
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
