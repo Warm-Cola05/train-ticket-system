@@ -3,7 +3,6 @@ package com.railway.train.member.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.jwt.JWTUtil;
 import com.railway.train.common.exception.BusinessException;
 import com.railway.train.common.exception.BusinessExceptionEnum;
 import com.railway.train.common.util.JwtUtil;
