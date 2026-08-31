@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.jwt.JWTUtil;
 import com.railway.train.common.exception.BusinessException;
 import com.railway.train.common.exception.BusinessExceptionEnum;
+import com.railway.train.common.util.JwtUtil;
 import com.railway.train.common.util.SnowUtil;
 import com.railway.train.member.domain.Member;
 import com.railway.train.member.domain.MemberExample;
@@ -83,10 +84,10 @@ public class MemberService {
             throw new BusinessException(BusinessExceptionEnum.MEMBER_MOBILE_CODE_ERROR);
         }
         MemberLoginResp memberLoginResp = BeanUtil.copyProperties(memberDB, MemberLoginResp.class);
-        Map<String, Object> map = BeanUtil.beanToMap(memberLoginResp);
+        /*Map<String, Object> map = BeanUtil.beanToMap(memberLoginResp);
         //密钥
-        String key = "Pat12306";
-        String token = JWTUtil.createToken(map, key.getBytes());
+        String key = "Pat12306";*/
+        String token = JwtUtil.createToken(memberLoginResp.getId(), memberLoginResp.getMobile());
         memberLoginResp.setToken(token);
         return memberLoginResp;
     }
