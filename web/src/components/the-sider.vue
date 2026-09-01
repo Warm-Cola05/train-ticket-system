@@ -4,12 +4,12 @@
         v-model:selectedKeys="selectedKeys"
         mode="inline"
         :style="{ height: '100%', borderRight: 0 }"
+        @click="handleClick"
     >
-      <!-- a-menu-item自带to属性，内部自动集成router，不用写router-link -->
-      <a-menu-item key="/welcome" to="/welcome">
+      <a-menu-item key="/welcome">
         <coffee-outlined /> &nbsp;欢迎
       </a-menu-item>
-      <a-menu-item key="/passenger" to="/passenger">
+      <a-menu-item key="/passenger">
         <user-outlined /> &nbsp;乘车人管理
       </a-menu-item>
     </a-menu>
@@ -36,8 +36,14 @@ export default defineComponent({
       selectedKeys.value = [];
       selectedKeys.value.push(newValue);
     }, {immediate: true});
+
+    // a-menu-item 不支持 to 属性，需要手动调用 router.push 跳转
+    const handleClick = ({ key }) => {
+      router.push(key);
+    };
     return {
-      selectedKeys
+      selectedKeys,
+      handleClick
     };
   }
 });

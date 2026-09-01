@@ -21,14 +21,11 @@
 </template>
 <script>
 import { defineComponent,ref,reactive } from 'vue';
-import passenger from "@/views/main/passenger.vue";
+import {notification} from "ant-design-vue";
+import axios from "axios";
 
 export default defineComponent({
-  computed: {
-    passenger() {
-      return passenger
-    }
-  },
+  name: "passenger-view",
   setup() {
     const visible = ref(false);
     const passenger = reactive({
@@ -46,9 +43,18 @@ export default defineComponent({
     };
 
     const handleOk = e => {
-      console.log(e);
-      visible.value = false;
+      // passenger 是 reactive 对象，直接用，不要加 .value
+      axios.post("/member/passenger/save", passenger).then((response) => {
+        let data = response.data;
+        if (data.success) {
+          notification.success({description: "保存成功！"});
+          visible.value = false;
+        } else {
+          notification.error({description: data.message});
+        }
+      });
     };
+
     return {
       passenger,
       visible,
