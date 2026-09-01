@@ -4,6 +4,7 @@ import com.railway.train.common.context.LoginMemberContext;
 import com.railway.train.common.resp.CommonResp;
 import com.railway.train.member.req.PassengerQueryReq;
 import com.railway.train.member.req.PassengerSaveReq;
+import com.railway.train.member.resp.PageResp;
 import com.railway.train.member.resp.PassengerQueryResp;
 import com.railway.train.member.service.PassengerService;
 import jakarta.annotation.Resource;
@@ -25,9 +26,9 @@ public class PassengerController {
     }
 
     @GetMapping("/query-list")
-    public CommonResp<List<PassengerQueryResp>> queryList(@Valid PassengerQueryReq req) {
+    public CommonResp<PageResp<PassengerQueryResp>> queryList(@Valid PassengerQueryReq req) {
         req.setMemberId(LoginMemberContext.getId());
-        List<PassengerQueryResp> list = passengerService.queryList(req);
+        PageResp<PassengerQueryResp> list = passengerService.queryList(req);
         return new CommonResp<>(list);
     }
 }
