@@ -21,3 +21,15 @@ Accept: application/json
 token: {{token}}
 
 ###
+
+POST http://localhost:8000/member/passenger/save
+Content-Type: application/json
+token: {{token}}
+
+{
+  "id": 2094448079850835968,
+  "memberId": 2092650017130156032,
+  "name":"test1",
+  "idCard": "123",
+  "type": "1"
+}
