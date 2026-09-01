@@ -40,6 +40,11 @@
             <version>1.18.28</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>1.4.6</version>
+        </dependency>
     </dependencies>
 
     <build>
