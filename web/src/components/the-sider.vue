@@ -1,7 +1,7 @@
 <template>
   <a-layout-sider width="200" style="background: #fff">
     <a-menu
-        v-model:selectedKeys="selectedKeys2"
+        v-model:selectedKeys="selectedKeys"
         mode="inline"
         :style="{ height: '100%', borderRight: 0 }"
     >
@@ -18,7 +18,8 @@
 
 <script>
 import { UserOutlined, CoffeeOutlined } from '@ant-design/icons-vue';
-import { defineComponent, ref } from 'vue';
+import {defineComponent, ref, watch} from 'vue';
+import router from "@/router";
 
 export default defineComponent({
   name: "the-sider-view",
@@ -28,9 +29,15 @@ export default defineComponent({
   },
   setup() {
     // 初始选中和第一个菜单key保持一致 /welcome
-    const selectedKeys2 = ref(['/welcome']);
+    const selectedKeys = ref([]);
+
+    watch(()=>router.currentRoute.value.path,(newValue)=>{
+      console.log('watch', newValue);
+      selectedKeys.value = [];
+      selectedKeys.value.push(newValue);
+    }, {immediate: true});
     return {
-      selectedKeys2
+      selectedKeys
     };
   }
 });
