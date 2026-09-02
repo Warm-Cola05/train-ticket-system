@@ -1,22 +1,24 @@
 package com.railway.train.generator.server;
 
 import com.railway.train.generator.util.FreemarkerUtil;
+import freemarker.template.TemplateException;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ServerGenerator {
         // 输出文件保存路径，双反斜杠是Java字符串转义，表示Windows路径分隔符 \
-        static String servicePath = "[module]/src/main/java/com/railway/train/[module]/service/";
+        static String serverPath = "[module]/src/main/java/com/railway/train/[module]/";
         static String pomPath = "generator\\pom.xml";
         // 静态代码块：类加载的时候就执行，提前创建输出文件夹
         static {
-            new File(servicePath).mkdirs();
+            new File(serverPath).mkdirs();
             // mkdirs()：多级目录创建；如果目录已存在，不会报错
         }
 
@@ -26,9 +28,9 @@ public class ServerGenerator {
             //比如generator-config-member.xml，得到module=member
             String module = generatorPath.replace("src/main/resources/generator-config-","").replace(".xml","");
             System.out.println("module:"+module);
-            servicePath = servicePath.replace("[module]", module);
+            serverPath = serverPath.replace("[module]", module);
             // new File(servicePath).mkdirs();
-            System.out.println("servicePath:"+servicePath);
+            System.out.println("serverPath:"+serverPath);
 
 
             //读取table节点
@@ -63,17 +65,25 @@ public class ServerGenerator {
             System.out.println("组装参数："+param);
 
 
+            gen(Domain, param, "service");
+            gen(Domain, param, "controller");
 
-            // 1.初始化FreeMarker配置，加载模板文件 test.ftl
-            FreemarkerUtil.initConfig("service.ftl");
+        }
 
+    private static void gen(String Domain, Map<String, Object> param,String target) throws IOException, TemplateException {
+        // 1.初始化FreeMarker配置，加载模板文件 test.ftl
+        FreemarkerUtil.initConfig(target+".ftl");
+        String toPath = serverPath + target + "/";
+        new File(toPath).mkdirs();
 //            // 2.构造模板需要的数据模型，map里的key对应ftl模板里的变量 ${domain}
 //            Map<String, Object> param = new HashMap<>();
 //            param.put("domain", "Test");
-
-            // 3.执行生成：读取test.ftl模板 + param数据，输出到 toPath + Test.java 文件
-            FreemarkerUtil.generator(servicePath +  Domain + "Service.java", param);
-        }
+        String Target = target.substring(0, 1).toUpperCase() + target.substring(1);
+        String fileName= toPath + Domain + Target + ".java";
+        System.out.println("输出文件："+fileName);
+        // 3.执行生成：读取test.ftl模板 + param数据，输出到 toPath + Test.java 文件
+        FreemarkerUtil.generator(fileName,param);
+    }
 
     private static String getGenerator() throws DocumentException {
         // 创建dom4j读取器
