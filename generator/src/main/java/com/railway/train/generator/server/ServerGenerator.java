@@ -1,5 +1,6 @@
 package com.railway.train.generator.server;
 
+import com.railway.train.generator.util.FreemarkerUtil;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
@@ -11,18 +12,26 @@ import java.util.Map;
 
 public class ServerGenerator {
         // 输出文件保存路径，双反斜杠是Java字符串转义，表示Windows路径分隔符 \
-        static String toPath = "generator\\src\\main\\java\\com\\railway\\train\\generator\\test\\";
+        static String servicePath = "[module]/src/main/java/com/railway/train/[module]/service/";
         static String pomPath = "generator\\pom.xml";
         // 静态代码块：类加载的时候就执行，提前创建输出文件夹
         static {
-            new File(toPath).mkdirs();
+            new File(servicePath).mkdirs();
             // mkdirs()：多级目录创建；如果目录已存在，不会报错
         }
 
         public static void main(String[] args) throws Exception {
-
+            //获取mybatis-generator
             String generatorPath = getGenerator();
+            //比如generator-config-member.xml，得到module=member
+            String module = generatorPath.replace("src/main/resources/generator-config-","").replace(".xml","");
+            System.out.println("module:"+module);
+            servicePath = servicePath.replace("[module]", module);
+            // new File(servicePath).mkdirs();
+            System.out.println("servicePath:"+servicePath);
 
+
+            //读取table节点
             Document document = new SAXReader().read("generator/"+generatorPath);
             // 查询文档里任意位置的 <table> 标签
             Node table = document.selectSingleNode("//table");
@@ -35,16 +44,35 @@ public class ServerGenerator {
             System.out.println(tableName.getText() + "/" + domainObjectName.getText());
 
 
+            // 示例：表名 jiawa_test
+            // Domain = JiawaTest
+            String Domain = domainObjectName.getText();
 
-           /* // 1.初始化FreeMarker配置，加载模板文件 test.ftl
-            FreemarkerUtil.initConfig("test.ftl");
+            // domain = jiawaTest
+            String domain = Domain.substring(0, 1).toLowerCase() + Domain.substring(1);
 
-            // 2.构造模板需要的数据模型，map里的key对应ftl模板里的变量 ${domain}
+            // do_main = jiawa-test
+            String do_main = tableName.getText().replaceAll("_", "-");
+
+            //组装参数
             Map<String, Object> param = new HashMap<>();
-            param.put("domain", "Test");
+            param.put("module", module);
+            param.put("Domain", Domain);
+            param.put("domain", domain);
+            param.put("do_main", do_main);
+            System.out.println("组装参数："+param);
+
+
+
+            // 1.初始化FreeMarker配置，加载模板文件 test.ftl
+            FreemarkerUtil.initConfig("service.ftl");
+
+//            // 2.构造模板需要的数据模型，map里的key对应ftl模板里的变量 ${domain}
+//            Map<String, Object> param = new HashMap<>();
+//            param.put("domain", "Test");
 
             // 3.执行生成：读取test.ftl模板 + param数据，输出到 toPath + Test.java 文件
-            FreemarkerUtil.generator(toPath + "Test.java", param);*/
+            FreemarkerUtil.generator(servicePath +  Domain + "Service.java", param);
         }
 
     private static String getGenerator() throws DocumentException {
