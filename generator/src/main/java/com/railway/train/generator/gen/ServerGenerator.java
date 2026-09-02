@@ -1,4 +1,4 @@
-package com.railway.train.generator.server;
+package com.railway.train.generator.gen;
 
 import com.railway.train.generator.util.DbUtil;
 import com.railway.train.generator.util.Field;
