@@ -1,25 +1,47 @@
 package com.railway.train.generator.server;
 
-import com.railway.train.generator.util.FreemarkerUtil;
-import freemarker.template.TemplateException;
+import org.dom4j.Document;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ServerGenerator {
         // 输出文件保存路径，双反斜杠是Java字符串转义，表示Windows路径分隔符 \
         static String toPath = "generator\\src\\main\\java\\com\\railway\\train\\generator\\test\\";
-
+        static String pomPath = "generator\\pom.xml";
         // 静态代码块：类加载的时候就执行，提前创建输出文件夹
         static {
             new File(toPath).mkdirs();
             // mkdirs()：多级目录创建；如果目录已存在，不会报错
         }
 
-        public static void main(String[] args) throws IOException, TemplateException {
-            // 1.初始化FreeMarker配置，加载模板文件 test.ftl
+        public static void main(String[] args) throws Exception {
+
+            // 创建dom4j读取器
+            SAXReader saxReader = new SAXReader();
+
+            // 【命名空间映射map】key=自定义前缀pom，value=pom.xml的命名空间URI
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("pom", "http://maven.apache.org/POM/4.0.0");
+
+            // 把命名空间注册给XPath解析工厂
+            saxReader.getDocumentFactory().setXPathNamespaceURIs(map);
+
+            // 读取pom.xml磁盘文件，得到XML文档对象
+            Document document = saxReader.read(pomPath);
+
+            // XPath查询：//pom:configurationFile
+            // pom: 就是上面注册的前缀，代表maven的命名空间
+            Node node = document.selectSingleNode("//pom:configurationFile");
+
+            // 获取标签里面的文本内容
+            System.out.println(node.getText());
+
+
+           /* // 1.初始化FreeMarker配置，加载模板文件 test.ftl
             FreemarkerUtil.initConfig("test.ftl");
 
             // 2.构造模板需要的数据模型，map里的key对应ftl模板里的变量 ${domain}
@@ -27,7 +49,7 @@ public class ServerGenerator {
             param.put("domain", "Test");
 
             // 3.执行生成：读取test.ftl模板 + param数据，输出到 toPath + Test.java 文件
-            FreemarkerUtil.generator(toPath + "Test.java", param);
+            FreemarkerUtil.generator(toPath + "Test.java", param);*/
         }
 }
 
