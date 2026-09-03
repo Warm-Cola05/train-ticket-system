@@ -11,6 +11,8 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin/station")
 public class StationAdminController {
@@ -27,6 +29,15 @@ public class StationAdminController {
     public CommonResp<PageResp<StationQueryResp>> queryList(@Valid StationQueryReq req) {
         req.setMemberId(LoginMemberContext.getId());
         PageResp<StationQueryResp> list = stationService.queryList(req);
+        return new CommonResp<>(list);
+    }
+
+    /**
+     * 查询全部车站（不带分页），供 admin 页面下拉框使用
+     */
+    @GetMapping("/query-all")
+    public CommonResp<List<StationQueryResp>> queryAll() {
+        List<StationQueryResp> list = stationService.queryAll();
         return new CommonResp<>(list);
     }
 
