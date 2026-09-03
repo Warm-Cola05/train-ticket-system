@@ -3,6 +3,7 @@ package com.railway.train.generator.gen;
 
 import cn.hutool.core.util.StrUtil;
 import com.railway.train.member.enums.PassengerTypeEnum;
+import enums.TrainTypeEnum;
 
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -23,6 +24,7 @@ public class EnumGenerator {
         long begin = System.currentTimeMillis();
         try {
             toJson(PassengerTypeEnum.class, bufferObject, bufferArray);
+            toJson(TrainTypeEnum.class, bufferObject, bufferArray);
 
             StringBuffer buffer = bufferObject.append("\r\n").append(bufferArray);
             writeJs(buffer);
