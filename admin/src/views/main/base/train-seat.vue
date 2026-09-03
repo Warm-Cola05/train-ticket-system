@@ -9,12 +9,13 @@
            :columns="columns"
            :pagination="pagination"
            @change="handleTableChange"
-           :loading="loading">
+           :loading="loading"
+           :row-key="record => record.id">
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'operation'">
       </template>
       <template v-else-if="column.dataIndex === 'col'">
-        <span v-for="item in SEAT_COL_ARRAY" :key="item.code">
+        <span v-for="item in SEAT_COL_ARRAY" :key="item.code + item.type">
           <span v-if="item.code === record.col && item.type === record.seatType">
             {{item.desc}}
           </span>

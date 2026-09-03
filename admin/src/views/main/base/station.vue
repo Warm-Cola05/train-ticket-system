@@ -9,7 +9,8 @@
            :columns="columns"
            :pagination="pagination"
            @change="handleTableChange"
-           :loading="loading">
+           :loading="loading"
+           :row-key="record => record.id">
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'operation'">
         <a-space>
