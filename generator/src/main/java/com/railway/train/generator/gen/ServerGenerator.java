@@ -19,11 +19,8 @@ public class ServerGenerator {
         // 输出文件保存路径，双反斜杠是Java字符串转义，表示Windows路径分隔符 \
         static String serverPath = "[module]/src/main/java/com/railway/train/[module]/";
         static String pomPath = "generator\\pom.xml";
-        // 静态代码块：类加载的时候就执行，提前创建输出文件夹
-        static {
-            new File(serverPath).mkdirs();
-            // mkdirs()：多级目录创建；如果目录已存在，不会报错
-        }
+        // 注意：不要在这里写 static 块去创建 serverPath 目录，会创建出字面量名 "[module]" 的空文件夹
+        // 目录创建放到 gen(...) 里用替换后的 serverPath 去做
 
         public static void main(String[] args) throws Exception {
             //获取mybatis-generator
@@ -87,12 +84,13 @@ public class ServerGenerator {
             param.put("readOnly", readOnly);
             System.out.println("组装参数："+param);
 
-//            gen(Domain, param, "service","service");
-//            gen(Domain, param, "controller","controller");
-//            gen(Domain, param, "req","saveReq");
-//            gen(Domain, param, "req","queryReq");
-//            gen(Domain, param, "resp","queryResp");
-            genVue(do_main,param);
+            gen(Domain, param, "service","service");
+            gen(Domain, param, "controller","controller");
+            gen(Domain, param, "req","saveReq");
+            gen(Domain, param, "req","queryReq");
+            gen(Domain, param, "resp","queryResp");
+            // 前端已经写好了，不再重新生成 Vue 文件
+            // genVue(do_main,param);
 
         }
 

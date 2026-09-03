@@ -15,4 +15,9 @@ public class PageReq {
     @Max(value = 100, message = "【每页条数】不能超过100")
     private Integer size;
 
+    /**
+     * 当前登录用户 id，由 Controller 通过 LoginMemberContext 注入；子类 QueryReq 自动继承
+     */
+    private Long memberId;
+
 }

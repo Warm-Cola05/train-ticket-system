@@ -4,7 +4,7 @@ import com.railway.train.common.context.LoginMemberContext;
 import com.railway.train.common.resp.CommonResp;
 import com.railway.train.member.req.PassengerQueryReq;
 import com.railway.train.member.req.PassengerSaveReq;
-import com.railway.train.member.resp.PageResp;
+import com.railway.train.common.resp.PageResp;
 import com.railway.train.member.resp.PassengerQueryResp;
 import com.railway.train.member.service.PassengerService;
 import jakarta.annotation.Resource;

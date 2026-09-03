@@ -1,4 +1,4 @@
-package com.railway.train.member.resp;
+package com.railway.train.common.resp;
 
 import lombok.Data;
 
