@@ -41,8 +41,8 @@
                              targetPackage="com.railway.train.business.mapper"
                              type="XMLMAPPER"/>
 
-<!--        <table tableName="business" domainObjectName="Member"/>-->
-        <table tableName="passenger" domainObjectName="Passenger"/>
+        <table tableName="member" domainObjectName="Member"/>
+<!--        <table tableName="passenger" domainObjectName="Passenger"/>-->
 <!--        <table tableName="ticket" domainObjectName="Ticket"/>-->
     </context>
 </generatorConfiguration>
