@@ -17,5 +17,5 @@ logging:
     com:
       railway:
         train:
-          member:
+          business:
             mapper: trace
