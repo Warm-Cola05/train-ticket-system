@@ -43,4 +43,8 @@ public class TrainAdminController {
         List<TrainQueryResp> list = trainService.queryAll();
         return new CommonResp<>(list);
     }
+    @GetMapping("/gen-seat/{trainCode}")
+    public CommonResp<Object> genSeat(@PathVariable String trainCode) {
+        return new CommonResp<>();
+    }
 }

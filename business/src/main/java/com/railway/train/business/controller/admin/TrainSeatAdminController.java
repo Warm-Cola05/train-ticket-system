@@ -35,4 +35,10 @@ public class TrainSeatAdminController {
         trainSeatService.delete(id);
         return new CommonResp<>();
     }
+
+    @GetMapping("/gen-seat/{trainCode}")
+    public CommonResp<Object> genSeat(@PathVariable String trainCode) {
+        trainSeatService.genTrainSeat(trainCode);
+        return new CommonResp<>();
+    }
 }
