@@ -1,4 +1,4 @@
-package enums;
+package com.railway.train.business.enums;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

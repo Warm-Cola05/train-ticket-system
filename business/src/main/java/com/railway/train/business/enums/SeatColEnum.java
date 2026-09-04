@@ -1,4 +1,4 @@
-package enums;
+package com.railway.train.business.enums;
 
 import java.util.ArrayList;
 import java.util.EnumSet;

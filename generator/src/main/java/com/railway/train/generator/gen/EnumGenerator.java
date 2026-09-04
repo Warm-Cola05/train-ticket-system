@@ -3,9 +3,9 @@ package com.railway.train.generator.gen;
 
 import cn.hutool.core.util.StrUtil;
 import com.railway.train.member.enums.PassengerTypeEnum;
-import enums.SeatColEnum;
-import enums.SeatTypeEnum;
-import enums.TrainTypeEnum;
+import com.railway.train.business.enums.SeatColEnum;
+import com.railway.train.business.enums.SeatTypeEnum;
+import com.railway.train.business.enums.TrainTypeEnum;
 
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;

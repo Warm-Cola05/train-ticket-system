@@ -5,9 +5,6 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.railway.train.business.domain.Train;
-import com.railway.train.business.domain.TrainExample;
-import com.railway.train.business.resp.TrainQueryResp;
 import com.railway.train.common.resp.PageResp;
 import com.railway.train.common.util.SnowUtil;
 import com.railway.train.business.domain.Station;
@@ -49,7 +46,6 @@ public class StationService {
         StationExample stationExample = new StationExample();
         stationExample.setOrderByClause("id desc");
         StationExample.Criteria criteria = stationExample.createCriteria();
-
         LOG.info("查询页码：{}", req.getPage());
         LOG.info("每页条数：{}", req.getSize());
         PageHelper.startPage(req.getPage(), req.getSize());
