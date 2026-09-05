@@ -118,8 +118,8 @@ public class DailyTrainService {
         dailyTrain.setDate(date);
         dailyTrainMapper.insert(dailyTrain);
 
-//        // 生成该车次的车站数据
-//        dailyTrainStationService.genDaily(date, train.getCode());
+        // 生成该车次的车站数据
+        dailyTrainStationService.genDaily(date, train.getCode());
 //
 //        // 生成该车次的车厢数据
 //        dailyTrainCarriageService.genDaily(date, train.getCode());
