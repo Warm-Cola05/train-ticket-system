@@ -53,7 +53,7 @@ public class TrainSeatService {
         TrainSeatExample trainSeatExample = new TrainSeatExample();
         trainSeatExample.setOrderByClause("train_code asc, carriage_index asc, carriage_seat_index asc");
         TrainSeatExample.Criteria criteria = trainSeatExample.createCriteria();
-        if (ObjectUtil.isNotEmpty(req.getTrainCode())){
+        if (ObjectUtil.isNotEmpty(req.getTrainCode())) {
             criteria.andTrainCodeEqualTo(req.getTrainCode());
         }
 
