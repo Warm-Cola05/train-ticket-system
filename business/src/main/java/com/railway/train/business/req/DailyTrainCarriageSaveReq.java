@@ -39,9 +39,9 @@ public class DailyTrainCarriageSaveReq {
     private String seatType;
 
     /**
-     * 座位数
+     * 座位数|由排数和列数自动计算得出，前端不传
      */
-    @NotNull(message = "【座位数】不能为空")
+//    @NotNull(message = "【座位数】不能为空")
     private Integer seatCount;
 
     /**
@@ -51,9 +51,9 @@ public class DailyTrainCarriageSaveReq {
     private Integer rowCount;
 
     /**
-     * 列数
+     * 列数|由座位类型自动计算得出，前端不传
      */
-    @NotNull(message = "【列数】不能为空")
+//    @NotNull(message = "【列数】不能为空")
     private Integer colCount;
 
     /**
