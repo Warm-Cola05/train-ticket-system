@@ -1,22 +1,18 @@
 package com.railway.train.business.req;
 
-import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-public class ConfirmOrderSaveReq {
+import java.util.Date;
+import java.util.List;
 
-    /**
-     * id
-     */
-    private Long id;
+public class ConfirmOrderDoReq {
 
     /**
      * 会员id
      */
-    @NotNull(message = "【会员id】不能为空")
     private Long memberId;
 
     /**
@@ -53,34 +49,30 @@ public class ConfirmOrderSaveReq {
     /**
      * 车票
      */
-    @NotBlank(message = "【车票】不能为空")
-    private String tickets;
+    @NotEmpty(message = "【车票】不能为空")
+    private List<ConfirmOrderTicketReq> tickets;
 
     /**
-     * 订单状态|枚举[ConfirmOrderStatusEnum]
+     * 验证码
      */
-    @NotBlank(message = "【订单状态】不能为空")
-    private String status;
+    @NotBlank(message = "【图片验证码】不能为空")
+    private String imageCode;
 
     /**
-     * 新增时间
+     * 图片验证码token
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private Date createTime;
+    @NotBlank(message = "【图片验证码】参数非法")
+    private String imageCodeToken;
 
     /**
-     * 修改时间
+     * 日志跟踪号
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private Date updateTime;
+    private String logId;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    /**
+     * 加入排队人数，用于体验排队功能
+     */
+    private int lineNumber;
 
     public Long getMemberId() {
         return memberId;
@@ -130,56 +122,60 @@ public class ConfirmOrderSaveReq {
         this.dailyTrainTicketId = dailyTrainTicketId;
     }
 
-    public String getTickets() {
+    public List<ConfirmOrderTicketReq> getTickets() {
         return tickets;
     }
 
-    public void setTickets(String tickets) {
+    public void setTickets(List<ConfirmOrderTicketReq> tickets) {
         this.tickets = tickets;
     }
 
-    public String getStatus() {
-        return status;
+    public String getImageCode() {
+        return imageCode;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setImageCode(String imageCode) {
+        this.imageCode = imageCode;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public String getImageCodeToken() {
+        return imageCodeToken;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setImageCodeToken(String imageCodeToken) {
+        this.imageCodeToken = imageCodeToken;
     }
 
-    public Date getUpdateTime() {
-        return updateTime;
+    public String getLogId() {
+        return logId;
     }
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
+    public void setLogId(String logId) {
+        this.logId = logId;
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public void setLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", memberId=").append(memberId);
-        sb.append(", date=").append(date);
-        sb.append(", trainCode=").append(trainCode);
-        sb.append(", start=").append(start);
-        sb.append(", end=").append(end);
-        sb.append(", dailyTrainTicketId=").append(dailyTrainTicketId);
-        sb.append(", tickets=").append(tickets);
-        sb.append(", status=").append(status);
-        sb.append(", createTime=").append(createTime);
-        sb.append(", updateTime=").append(updateTime);
-        sb.append("]");
-        return sb.toString();
+        return "ConfirmOrderDoReq{" +
+                "memberId=" + memberId +
+                ", date=" + date +
+                ", trainCode='" + trainCode + '\'' +
+                ", start='" + start + '\'' +
+                ", end='" + end + '\'' +
+                ", dailyTrainTicketId=" + dailyTrainTicketId +
+                ", tickets=" + tickets +
+                ", imageCode='" + imageCode + '\'' +
+                ", imageCodeToken='" + imageCodeToken + '\'' +
+                ", logId='" + logId + '\'' +
+                ", lineNumber=" + lineNumber +
+                '}';
     }
 }

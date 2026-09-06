@@ -3,21 +3,25 @@ package com.railway.train.business.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.railway.train.business.enums.ConfirmOrderStatusEnum;
+import com.railway.train.business.req.ConfirmOrderDoReq;
+import com.railway.train.business.req.ConfirmOrderQueryReq;
+import com.railway.train.business.req.ConfirmOrderTicketReq;
 import com.railway.train.common.resp.PageResp;
 import com.railway.train.common.util.SnowUtil;
 import com.railway.train.business.domain.ConfirmOrder;
 import com.railway.train.business.domain.ConfirmOrderExample;
 import com.railway.train.business.mapper.ConfirmOrderMapper;
-import com.railway.train.business.req.ConfirmOrderQueryReq;
-import com.railway.train.business.req.ConfirmOrderSaveReq;
 import com.railway.train.business.resp.ConfirmOrderQueryResp;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -27,8 +31,7 @@ public class ConfirmOrderService {
 
     @Resource
     private ConfirmOrderMapper confirmOrderMapper;
-
-    public void save(ConfirmOrderSaveReq req) {
+    public void save(ConfirmOrderDoReq req) {
         DateTime now = DateTime.now();
         ConfirmOrder confirmOrder = BeanUtil.copyProperties(req, ConfirmOrder.class);
         if (ObjectUtil.isNull(confirmOrder.getId())) {
@@ -66,5 +69,32 @@ public class ConfirmOrderService {
 
     public void delete(Long id) {
         confirmOrderMapper.deleteByPrimaryKey(id);
+    }
+
+
+    public void doConfirm(ConfirmOrderDoReq req) {
+
+        Date date = req.getDate();
+        String trainCode = req.getTrainCode();
+        String start = req.getStart();
+        String end = req.getEnd();
+        List<ConfirmOrderTicketReq> tickets = req.getTickets();
+
+        DateTime now = DateTime.now();
+        ConfirmOrder confirmOrder = new ConfirmOrder();
+        confirmOrder.setId(SnowUtil.getSnowflakeNextId());
+        confirmOrder.setCreateTime(now);
+        confirmOrder.setUpdateTime(now);
+        confirmOrder.setMemberId(req.getMemberId());
+        confirmOrder.setDate(date);
+        confirmOrder.setTrainCode(trainCode);
+        confirmOrder.setStart(start);
+        confirmOrder.setEnd(end);
+        confirmOrder.setDailyTrainTicketId(req.getDailyTrainTicketId());
+        confirmOrder.setStatus(ConfirmOrderStatusEnum.INIT.getCode());
+        confirmOrder.setTickets(JSON.toJSONString(tickets));
+        confirmOrderMapper.insert(confirmOrder);
+
+        confirmOrderMapper.insert(confirmOrder);
     }
 }

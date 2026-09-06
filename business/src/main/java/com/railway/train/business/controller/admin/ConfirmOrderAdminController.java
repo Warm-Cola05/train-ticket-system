@@ -1,10 +1,9 @@
 package com.railway.train.business.controller.admin;
 
-import com.railway.train.common.context.LoginMemberContext;
+import com.railway.train.business.req.ConfirmOrderDoReq;
+import com.railway.train.business.req.ConfirmOrderQueryReq;
 import com.railway.train.common.resp.CommonResp;
 import com.railway.train.common.resp.PageResp;
-import com.railway.train.business.req.ConfirmOrderQueryReq;
-import com.railway.train.business.req.ConfirmOrderSaveReq;
 import com.railway.train.business.resp.ConfirmOrderQueryResp;
 import com.railway.train.business.service.ConfirmOrderService;
 import jakarta.annotation.Resource;
@@ -18,14 +17,13 @@ public class ConfirmOrderAdminController {
     private ConfirmOrderService confirmOrderService;
 
     @PostMapping("/save")
-    public CommonResp<Object> save(@Valid @RequestBody ConfirmOrderSaveReq req) {
+    public CommonResp<Object> save(@Valid @RequestBody ConfirmOrderDoReq req) {
         confirmOrderService.save(req);
         return new CommonResp<>();
     }
 
     @GetMapping("/query-list")
     public CommonResp<PageResp<ConfirmOrderQueryResp>> queryList(@Valid ConfirmOrderQueryReq req) {
-        req.setMemberId(LoginMemberContext.getId());
         PageResp<ConfirmOrderQueryResp> list = confirmOrderService.queryList(req);
         return new CommonResp<>(list);
     }
