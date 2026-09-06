@@ -92,7 +92,7 @@ public class ConfirmOrderService {
     }
 
 
-    public void doConfirm(ConfirmOrderDoReq req) {
+    public void doConfirm(ConfirmOrderDoReq req) throws Exception {
 
         Date date = req.getDate();
         String trainCode = req.getTrainCode();
@@ -179,7 +179,7 @@ public class ConfirmOrderService {
             }
         }
         LOG.info("最终选中的座位：{}", finalSeatList);
-        afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList);
+        afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList, tickets, confirmOrder);
     }
 
     private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
