@@ -179,7 +179,7 @@ public class ConfirmOrderService {
             }
         }
         LOG.info("最终选中的座位：{}", finalSeatList);
-        afterConfirmOrderService.afterDoConfirm(finalSeatList);
+        afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList);
     }
 
     private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
