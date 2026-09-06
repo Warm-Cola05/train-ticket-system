@@ -7,15 +7,16 @@ spring:
         - id: member
           predicates:
             - Path=/member/**
-          uri: http://127.0.0.1:8001
+#          uri: http://127.0.0.1:8001
+          uri: lb://member
         - id: business
           predicates:
             - Path=/business/**
-          uri: http://127.0.0.1:8002
+          uri: lb://business
         - id: batch
           predicates:
             - Path=/batch/**
-          uri: http://127.0.0.1:8003
+          uri: lb://batch
       globalcors:
         cors-configurations:
           '[/**]':
