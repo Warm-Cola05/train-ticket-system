@@ -47,6 +47,8 @@ public class ConfirmOrderService {
     private DailyTrainCarriageService dailyTrainCarriageService;
     @Resource
     private DailyTrainSeatService dailyTrainSeatService;
+    @Resource
+    private AfterConfirmOrderService afterConfirmOrderService;
 
 
     public void save(ConfirmOrderDoReq req) {
@@ -176,6 +178,8 @@ public class ConfirmOrderService {
                 );
             }
         }
+        LOG.info("最终选中的座位：{}", finalSeatList);
+        afterConfirmOrderService.afterDoConfirm(finalSeatList);
     }
 
     private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
@@ -309,6 +313,8 @@ public class ConfirmOrderService {
 
         }
     }
+
+
     private static void reduceTickets(ConfirmOrderDoReq req, DailyTrainTicket dailyTrainTicket) {
         for (ConfirmOrderTicketReq ticketReq : req.getTickets()) {
             String seatTypeCode = ticketReq.getSeatTypeCode();
