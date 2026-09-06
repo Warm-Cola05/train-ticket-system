@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.railway.train.business.domain.DailyTrainTicket;
 import com.railway.train.business.enums.ConfirmOrderStatusEnum;
 import com.railway.train.business.req.ConfirmOrderDoReq;
 import com.railway.train.business.req.ConfirmOrderQueryReq;
@@ -31,6 +32,9 @@ public class ConfirmOrderService {
 
     @Resource
     private ConfirmOrderMapper confirmOrderMapper;
+
+    @Resource
+    private DailyTrainTicketService dailyTrainTicketService;
     public void save(ConfirmOrderDoReq req) {
         DateTime now = DateTime.now();
         ConfirmOrder confirmOrder = BeanUtil.copyProperties(req, ConfirmOrder.class);
@@ -95,6 +99,7 @@ public class ConfirmOrderService {
         confirmOrder.setTickets(JSON.toJSONString(tickets));
         confirmOrderMapper.insert(confirmOrder);
 
-        confirmOrderMapper.insert(confirmOrder);
+        DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.selectByUnique(date, trainCode, start, end);
+        LOG.info("查询余票记录：{}", dailyTrainTicket);
     }
 }
