@@ -13,6 +13,8 @@ spring:
     name: business
 mybatis:
   mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    local-cache-scope: statement
 
 logging:
   level:
