@@ -72,7 +72,6 @@ public class DailyTrainTicketQueryReq extends PageReq {
     public int hashCode() {
         return Objects.hash(date, trainCode, start, end, getPage(), getSize());
     }
-
     @Override
     public String toString() {
         return "DailyTrainTicketQueryReq{" +
