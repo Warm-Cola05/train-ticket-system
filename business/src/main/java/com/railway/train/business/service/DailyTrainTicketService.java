@@ -100,10 +100,6 @@ public class DailyTrainTicketService {
         return pageResp;
     }
 
-    public void delete(Long id) {
-        dailyTrainTicketMapper.deleteByPrimaryKey(id);
-    }
-
     @Cacheable(value = "DailyTrainTicketService.queryList3")
     public PageResp<DailyTrainTicketQueryResp> queryList3(DailyTrainTicketQueryReq req) {
         LOG.info("测试缓存击穿");
@@ -114,6 +110,12 @@ public class DailyTrainTicketService {
     public PageResp<DailyTrainTicketQueryResp> queryList2(DailyTrainTicketQueryReq req) {
         return queryList(req);
     }
+
+    public void delete(Long id) {
+        dailyTrainTicketMapper.deleteByPrimaryKey(id);
+    }
+
+
 
     @Transactional
     public void genDaily(DailyTrain dailyTrain, Date date, String trainCode) {
