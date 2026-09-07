@@ -23,6 +23,7 @@ import com.railway.train.business.resp.DailyTrainTicketQueryResp;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
@@ -101,6 +102,17 @@ public class DailyTrainTicketService {
 
     public void delete(Long id) {
         dailyTrainTicketMapper.deleteByPrimaryKey(id);
+    }
+
+    @Cacheable(value = "DailyTrainTicketService.queryList3")
+    public PageResp<DailyTrainTicketQueryResp> queryList3(DailyTrainTicketQueryReq req) {
+        LOG.info("测试缓存击穿");
+        return null;
+    }
+
+    @CachePut(value = "DailyTrainTicketService.queryList")
+    public PageResp<DailyTrainTicketQueryResp> queryList2(DailyTrainTicketQueryReq req) {
+        return queryList(req);
     }
 
     @Transactional
