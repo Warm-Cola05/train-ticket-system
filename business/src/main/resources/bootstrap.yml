@@ -16,13 +16,36 @@ spring:
   #注册中心的名字，对应nacos控制台中的命名空间
   application:
     name: business
+#seata:
+#  #事务组名字
+#  tx-service-group: train-group
+#  #十事务组和seata集群做关联
+#  service:
+#    vgroup-mapping:
+#      train-group: default
+#    grouplist:
+#      #seata集群对应的机器
+#      default: 127.0.0.1:8091
+
+
+# seata注册中心，要和seata server的application.yml配置保持一致
 seata:
-  #事务组名字
-  tx-service-group: train-group
-  #十事务组和seata集群做关联
-  service:
-    vgroup-mapping:
-      train-group: default
-    grouplist:
-      #seata集群对应的机器
-      default: 127.0.0.1:8091
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      namespace: train
+      username: nacos
+      password: nacos
+  # seata配置中心，要和seata server的application.yml配置保持一致
+  config:
+    type: nacos
+    nacos:
+      server-addr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      namespace: train
+      dataId: seataServer.properties
+      username: nacos
+      password: nacos
