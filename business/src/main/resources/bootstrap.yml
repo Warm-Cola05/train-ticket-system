@@ -16,3 +16,13 @@ spring:
   #注册中心的名字，对应nacos控制台中的命名空间
   application:
     name: business
+seata:
+  #事务组名字
+  tx-service-group: train-group
+  #十事务组和seata集群做关联
+  service:
+    vgroup-mapping:
+      train-group: default
+    grouplist:
+      #seata集群对应的机器
+      default: 127.0.0.1:8091
