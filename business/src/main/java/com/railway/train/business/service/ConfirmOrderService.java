@@ -26,11 +26,13 @@ import com.railway.train.business.resp.ConfirmOrderQueryResp;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ConfirmOrderService {
@@ -49,7 +51,8 @@ public class ConfirmOrderService {
     private DailyTrainSeatService dailyTrainSeatService;
     @Resource
     private AfterConfirmOrderService afterConfirmOrderService;
-
+    @Resource
+    private StringRedisTemplate redisTemplate;
 
     public void save(ConfirmOrderDoReq req) {
         DateTime now = DateTime.now();
@@ -92,9 +95,20 @@ public class ConfirmOrderService {
     }
 
 
-    public synchronized void doConfirm(ConfirmOrderDoReq req) throws Exception {
+//    public synchronized void doConfirm(ConfirmOrderDoReq req) throws Exception {
+public synchronized void doConfirm(ConfirmOrderDoReq req) throws Exception {
 
-        Date date = req.getDate();
+        String key = req.getDate() + "-" +req.getTrainCode();
+    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(key, key, 5, TimeUnit.SECONDS);
+    if (setIfAbsent){
+        LOG.info("获取锁成功，开始执行业务");
+    } else {
+        //只是没有抢到锁，并不是票抢完了，所以提示稍后再试
+        LOG.info("获取锁失败，业务逻辑处理");
+        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+    }
+
+    Date date = req.getDate();
         String trainCode = req.getTrainCode();
         String start = req.getStart();
         String end = req.getEnd();
