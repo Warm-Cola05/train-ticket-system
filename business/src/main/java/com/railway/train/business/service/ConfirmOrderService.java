@@ -25,6 +25,8 @@ import com.railway.train.common.util.SnowUtil;
 import com.railway.train.business.mapper.ConfirmOrderMapper;
 import com.railway.train.business.resp.ConfirmOrderQueryResp;
 import jakarta.annotation.Resource;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,8 @@ public class ConfirmOrderService {
     private AfterConfirmOrderService afterConfirmOrderService;
     @Resource
     private StringRedisTemplate redisTemplate;
+    @Autowired
+    private RedissonClient redissonClient;
 
     public void save(ConfirmOrderDoReq req) {
         DateTime now = DateTime.now();
@@ -101,15 +105,45 @@ public class ConfirmOrderService {
     public void doConfirm(ConfirmOrderDoReq req) throws Exception {
 
         String lockKey = DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
-        Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
-        if (setIfAbsent) {
-            LOG.info("获取锁成功，开始执行业务");
-        } else {
-            //只是没有抢到锁，并不是票抢完了，所以提示稍后再试
-            LOG.info("获取锁失败，业务逻辑处理");
-            throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
-        }
+//        Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
+//        if (Boolean.TRUE.equals(setIfAbsent)) {
+//            LOG.info("获取锁成功，开始执行业务");
+//        } else {
+//            //只是没有抢到锁，并不是票抢完了，所以提示稍后再试
+//            LOG.info("获取锁失败，业务逻辑处理");
+//            throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+//        }
 
+        RLock lock = null;
+
+        try {
+             // 使用redisson，自带看门狗
+             lock = redissonClient.getLock(lockKey);
+
+             // 红锁的写法
+             // RedissonRedLock redissonRedLock = new RedissonRedLock(lock, lock, lock);
+             // boolean tryLock1 = redissonRedLock.tryLock(0, TimeUnit.SECONDS);
+
+             /**
+               waitTime – the maximum time to acquire the lock 等待获取锁时间(最大尝试获得锁的时间)，超时返回false
+               leaseTime – lease time 锁时长，即n秒后自动释放锁
+               time unit – time unit 时间单位
+              */
+             // boolean tryLock = lock.tryLock(30, 10, TimeUnit.SECONDS); // 不带看门狗
+             boolean tryLock = lock.tryLock(0, TimeUnit.SECONDS); // 带看门狗
+             if (tryLock) {
+                 LOG.info("恭喜，抢到锁了！");
+                  //可以把下面这段放开，只用一个线程来测试，看看redisson的看门狗效果
+//                  for (int i = 0; i < 30; i++) {
+//                      Long expire = redisTemplate.opsForValue().getOperations().getExpire(lockKey);
+//                      LOG.info("锁过期时间还有：{}", expire);
+//                      Thread.sleep(1000);
+//                  }
+             } else {
+                 // 只是没抢到锁，并不知道票抢完了没，所以提示稍候再试
+                 LOG.info("很遗憾，没抢到锁");
+                 throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+             }
         Date date = req.getDate();
         String trainCode = req.getTrainCode();
         String start = req.getStart();
@@ -203,12 +237,18 @@ public class ConfirmOrderService {
             LOG.error("保存购票信息异常", e);
             throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION);
         }
-
-        LOG.info("购票流程结束，释放锁");
-        // 释放锁
-        redisTemplate.delete(lockKey);
-
+            LOG.info("购票流程结束，释放锁");
+            // 释放锁
+            redisTemplate.delete(lockKey);
+            } catch(InterruptedException e){
+            LOG.error("购票异常", e);
+        } finally {
+           LOG.info("购票流程结束，释放锁");
+           if (null != lock && lock.isHeldByCurrentThread()){
+               lock.unlock();
+        }
     }
+}
 
     private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
         List<DailyTrainSeat> getSeatList = new ArrayList<>();
