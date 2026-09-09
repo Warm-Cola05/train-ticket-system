@@ -3,6 +3,7 @@ package com.railway.train.business.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -26,6 +27,7 @@ import com.railway.train.business.resp.ConfirmOrderQueryResp;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +51,7 @@ public class ConfirmOrderService {
     private DailyTrainCarriageService dailyTrainCarriageService;
     @Resource
     private DailyTrainSeatService dailyTrainSeatService;
-    @Resource
+    @Autowired
     private AfterConfirmOrderService afterConfirmOrderService;
     @Resource
     private StringRedisTemplate redisTemplate;
@@ -95,20 +97,20 @@ public class ConfirmOrderService {
     }
 
 
-//    public synchronized void doConfirm(ConfirmOrderDoReq req) throws Exception {
-public synchronized void doConfirm(ConfirmOrderDoReq req) throws Exception {
+    //    public synchronized void doConfirm(ConfirmOrderDoReq req) throws Exception {
+    public void doConfirm(ConfirmOrderDoReq req) throws Exception {
 
-        String key = req.getDate() + "-" +req.getTrainCode();
-    Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(key, key, 5, TimeUnit.SECONDS);
-    if (setIfAbsent){
-        LOG.info("获取锁成功，开始执行业务");
-    } else {
-        //只是没有抢到锁，并不是票抢完了，所以提示稍后再试
-        LOG.info("获取锁失败，业务逻辑处理");
-        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
-    }
+        String lockKey = DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
+        Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
+        if (setIfAbsent) {
+            LOG.info("获取锁成功，开始执行业务");
+        } else {
+            //只是没有抢到锁，并不是票抢完了，所以提示稍后再试
+            LOG.info("获取锁失败，业务逻辑处理");
+            throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+        }
 
-    Date date = req.getDate();
+        Date date = req.getDate();
         String trainCode = req.getTrainCode();
         String start = req.getStart();
         String end = req.getEnd();
@@ -180,8 +182,7 @@ public synchronized void doConfirm(ConfirmOrderDoReq req) throws Exception {
             );
 
 
-
-        } else{
+        } else {
             LOG.info("本次购票无选座");
             for (ConfirmOrderTicketReq ticketReq : tickets) {
                 getSeat(finalSeatList,
@@ -199,9 +200,14 @@ public synchronized void doConfirm(ConfirmOrderDoReq req) throws Exception {
         try {
             afterConfirmOrderService.afterDoConfirm(dailyTrainTicket, finalSeatList, tickets, confirmOrder);
         } catch (Exception e) {
-            LOG.error("保存购票信息异常",e);
+            LOG.error("保存购票信息异常", e);
             throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION);
         }
+
+        LOG.info("购票流程结束，释放锁");
+        // 释放锁
+        redisTemplate.delete(lockKey);
+
     }
 
     private void getSeat(List<DailyTrainSeat> finalSeatList, Date date, String trainCode, String seatType, String column, List<Integer> offsetList, Integer startIndex, Integer endIndex) {
