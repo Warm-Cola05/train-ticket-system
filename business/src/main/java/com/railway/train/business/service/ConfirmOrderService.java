@@ -92,7 +92,7 @@ public class ConfirmOrderService {
     }
 
 
-    public void doConfirm(ConfirmOrderDoReq req) throws Exception {
+    public synchronized void doConfirm(ConfirmOrderDoReq req) throws Exception {
 
         Date date = req.getDate();
         String trainCode = req.getTrainCode();
@@ -115,10 +115,13 @@ public class ConfirmOrderService {
         confirmOrder.setTickets(JSON.toJSONString(tickets));
         confirmOrderMapper.insert(confirmOrder);
 
+
         DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.selectByUnique(date, trainCode, start, end);
         LOG.info("查询余票记录：{}", dailyTrainTicket);
         // 预扣减余票数量，并判断余票是否足够
         reduceTickets(req, dailyTrainTicket);
+
+
         // 最终的选座结果
         List<DailyTrainSeat> finalSeatList = new ArrayList<>();
         // 计算相对第一个座位的偏移值
