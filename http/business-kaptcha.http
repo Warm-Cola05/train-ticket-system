@@ -1,0 +1,8 @@
+# 图片验证码：下单用
+# 前端流程：随机生成 imageCodeToken -> GET image-code/{token} 得到图片 -> 用户输入答案 -> 下单时随 body 提交
+# token 换成任意随机值即可，这里用 123456 演示
+
+### 生成图片验证码（返回 image/jpg 图片流，答案存 redis 60 秒）
+GET http://127.0.0.1:8000/business/kaptcha/image-code/123456
+
+###

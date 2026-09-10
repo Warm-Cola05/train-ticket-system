@@ -1,6 +1,12 @@
 server:
   port: 8000
 spring:
+  # 图片验证码校验需要：与 business 连同一个 redis（验证码答案存在 redis 里）
+  data:
+    redis:
+      host: 192.168.47.130
+      port: 6379
+      password: 123456
   cloud:
     gateway:
       routes:
