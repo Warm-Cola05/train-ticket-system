@@ -23,6 +23,12 @@ spring:
       key-prefix: train_cache_
       cache-null-values: true
       time-to-live: 60s
+  #sentinel控台: https://github.com/alibabo/spring-cloud-alibaba/wiki/Sentinel
+  cloud:
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: 127.0.0.1:8080
 mybatis:
   mapper-locations: classpath*:mapper/**/*.xml
   configuration:
