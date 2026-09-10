@@ -1,18 +1,35 @@
-##nacos server地址
 spring:
+  application:
+    name: batch
+  profiles:
+    active: dev
+
   cloud:
     nacos:
-      server-addr: 127.0.0.1:8848
-      # 配置中心文件后缀，默认yml
       config:
-        file-extension: yml
-        ##nacos命名空间
+        server-addr: 127.0.0.1:8848
+        file-extension: properties
         namespace: train
       discovery:
         server-addr: 127.0.0.1:8848
         namespace: train
-  profiles:
-    active: dev
-  #注册中心的名字，对应nacos控制台中的命名空间
-  application:
-    name: batch
+
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:18080
+      datasource:
+        degrade:
+          nacos:
+            serverAddr: 127.0.0.1:8848
+            namespace: train
+            groupId: DEFAULT_GROUP
+            dataId: sentinel-batch-degrade
+            ruleType: degrade
+
+    openfeign:
+      lazy-attributes-resolution: true
+
+feign:
+  sentinel:
+    enabled: true
