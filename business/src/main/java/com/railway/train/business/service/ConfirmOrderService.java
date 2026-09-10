@@ -15,6 +15,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.railway.train.business.domain.*;
 import com.railway.train.business.enums.ConfirmOrderStatusEnum;
+import com.railway.train.business.enums.RedisKeyPreEnum;
 import com.railway.train.business.enums.SeatColEnum;
 import com.railway.train.business.enums.SeatTypeEnum;
 import com.railway.train.business.req.ConfirmOrderDoReq;
@@ -122,7 +123,7 @@ public class ConfirmOrderService {
          }
 
         //购票
-        String lockKey = DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
+        String lockKey = RedisKeyPreEnum.SK_TOKEN + "-" + DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
 //        Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
 //        if (Boolean.TRUE.equals(setIfAbsent)) {
 //            LOG.info("获取锁成功，开始执行业务");
