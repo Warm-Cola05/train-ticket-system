@@ -20,6 +20,7 @@ import com.railway.train.business.enums.SeatTypeEnum;
 import com.railway.train.business.req.ConfirmOrderDoReq;
 import com.railway.train.business.req.ConfirmOrderQueryReq;
 import com.railway.train.business.req.ConfirmOrderTicketReq;
+import com.railway.train.common.context.LoginMemberContext;
 import com.railway.train.common.exception.BusinessException;
 import com.railway.train.common.exception.BusinessExceptionEnum;
 import com.railway.train.common.resp.PageResp;
@@ -59,8 +60,12 @@ public class ConfirmOrderService {
     private AfterConfirmOrderService afterConfirmOrderService;
     @Autowired
     private StringRedisTemplate redisTemplate;
+
     @Autowired
     private RedissonClient redissonClient;
+
+    @Autowired
+    private SkTokenService skTokenService;
 
     public void save(ConfirmOrderDoReq req) {
         DateTime now = DateTime.now();
@@ -107,7 +112,16 @@ public class ConfirmOrderService {
 //    @SentinelResource("doConfirm")
     @SentinelResource(value = "doConfirm", blockHandler = "doConfirmBlock")
     public void doConfirm(ConfirmOrderDoReq req) throws Exception {
+         // 校验令牌余量
+         boolean validSkToken = skTokenService.validSkToken(req.getDate(), req.getTrainCode(), LoginMemberContext.getId());
+         if (validSkToken) {
+             LOG.info("令牌校验通过");
+         } else {
+             LOG.info("令牌校验不通过");
+             throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
+         }
 
+        //购票
         String lockKey = DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
 //        Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
 //        if (Boolean.TRUE.equals(setIfAbsent)) {
