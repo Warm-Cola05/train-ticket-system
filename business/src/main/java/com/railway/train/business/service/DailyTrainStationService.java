@@ -124,4 +124,15 @@ public class DailyTrainStationService {
         long stationCount = dailyTrainStationMapper.countByExample(example);
         return stationCount;
     }
+
+    /**
+     * 按车次查询全部车站（按站序升序），用于余票查询页"途经车站"展示
+     */
+    public List<DailyTrainStationQueryResp> queryByTrain(Date date, String trainCode) {
+        DailyTrainStationExample dailyTrainStationExample = new DailyTrainStationExample();
+        dailyTrainStationExample.setOrderByClause("`index` asc");
+        dailyTrainStationExample.createCriteria().andDateEqualTo(date).andTrainCodeEqualTo(trainCode);
+        List<DailyTrainStation> list = dailyTrainStationMapper.selectByExample(dailyTrainStationExample);
+        return BeanUtil.copyToList(list, DailyTrainStationQueryResp.class);
+    }
 }
