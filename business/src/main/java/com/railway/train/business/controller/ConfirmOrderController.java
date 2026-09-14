@@ -1,16 +1,10 @@
 package com.railway.train.business.controller;
 
-import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.railway.train.business.req.ConfirmOrderDoReq;
-import com.railway.train.business.req.ConfirmOrderQueryReq;
-import com.railway.train.business.resp.ConfirmOrderQueryResp;
+import com.railway.train.business.service.BeforeConfirmOrderService;
 import com.railway.train.business.service.ConfirmOrderService;
 import com.railway.train.common.context.LoginMemberContext;
-import com.railway.train.common.exception.BusinessException;
-import com.railway.train.common.exception.BusinessExceptionEnum;
 import com.railway.train.common.resp.CommonResp;
-import com.railway.train.common.resp.PageResp;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -20,30 +14,44 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/confirm-order")
 public class ConfirmOrderController {
+
     private static final Logger LOG = LoggerFactory.getLogger(ConfirmOrderController.class);
+
+    @Resource
+    private BeforeConfirmOrderService beforeConfirmOrderService;
+
     @Resource
     private ConfirmOrderService confirmOrderService;
-    //接口的资源名称不要和接口路径一致，会导致限流后走不到降级方法中
-    @SentinelResource(value = "confirmOrderDo", blockHandler = "doConfirmBlock")
+
+    /**
+     * 下单：只做前置校验 + 保存订单 + 发MQ消息，立刻返回订单ID给用户，
+     * 真正的出票由消费者异步完成，用户凭此ID轮询排队/结果。
+     */
     @PostMapping("/do")
-    public CommonResp<Object> doConfirm(@Valid @RequestBody ConfirmOrderDoReq req) throws Exception {
+    public CommonResp<Object> doConfirm(@Valid @RequestBody ConfirmOrderDoReq req) {
         req.setMemberId(LoginMemberContext.getId());
-        confirmOrderService.doConfirm(req);
-        return new CommonResp<>();
+        Long id = beforeConfirmOrderService.beforeDoConfirm(req);
+        LOG.info("下单受理成功，确认订单ID：{}", id);
+        // Long 转 String 返回，避免前端 JS 数字精度丢失
+        return new CommonResp<>(String.valueOf(id));
     }
 
     /**
-     * 降级方法，需包含限流方法的所有参数和BlockException参数
-     * @param req
-     * @param e
+     * 查询排队数量
+     * 返回值：0 处理中；-1 成功；-2 失败；-3 无票；-4 取消；正数表示前面还有几人
      */
-    public CommonResp<Object> doConfirmBlock(ConfirmOrderDoReq req, BlockException e) {
-        LOG.info("购票请求被限流：{}", req);
-        //throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_FLOW_EXCEPTION);
-        CommonResp<Object> commonResp = new CommonResp<>();
-        commonResp.setSuccess(false);
-        commonResp.setMessage(BusinessExceptionEnum.CONFIRM_ORDER_FLOW_EXCEPTION.getDesc());
-        return commonResp;
+    @GetMapping("/query-line-count/{id}")
+    public CommonResp<Integer> queryLineCount(@PathVariable Long id) {
+        Integer count = confirmOrderService.queryLineCount(id);
+        return new CommonResp<>(count);
+    }
+
+    /**
+     * 取消订单
+     */
+    @GetMapping("/cancel/{id}")
+    public CommonResp<Object> cancel(@PathVariable Long id) {
+        confirmOrderService.cancel(id);
+        return new CommonResp<>();
     }
 }
-

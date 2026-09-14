@@ -23,6 +23,11 @@ spring:
       key-prefix: train_cache_
       cache-null-values: true
       time-to-live: 60s
+  # RocketMQ 配置：name-server 为 NameServer 地址，producer.group 生产者分组
+  rocketmq:
+    name-server: 127.0.0.1:9876
+    producer:
+      group: default
   #sentinel控台: https://github.com/alibabo/spring-cloud-alibaba/wiki/Sentinel
   cloud:
     sentinel:

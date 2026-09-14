@@ -28,6 +28,7 @@
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2022.0.0</spring-cloud.version>
+        <rocketmq.spring.boot.starter.version>2.2.3</rocketmq.spring.boot.starter.version>
     </properties>
 
 
@@ -39,6 +40,12 @@
                 <version>${spring-cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq.spring.boot.starter.version}</version>
             </dependency>
 
             <dependency>

@@ -494,15 +494,11 @@ export default defineComponent({
       axios.get("/business/confirm-order/cancel/" + confirmOrderId.value).then((response) => {
         let data = response.data;
         if (data.success) {
-          let result = data.content;
-          if (result === 1) {
-            notification.success({description: "取消成功！"});
-            // 取消成功时，不用再轮询排队结果
-            clearInterval(queryLineCountInterval);
-            lineModalVisible.value = false;
-          } else {
-            notification.error({description: "取消失败！"});
-          }
+          // 后端 cancel 接口返回的 content 为 null，这里直接按 success 判断即可
+          notification.success({description: "取消成功！"});
+          // 取消成功时，不用再轮询排队结果
+          clearInterval(queryLineCountInterval);
+          lineModalVisible.value = false;
         } else {
           notification.error({description: data.message});
         }
